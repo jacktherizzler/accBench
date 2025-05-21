@@ -22,7 +22,13 @@ class BenchmarkTool:
         start_time = time.time()
         for _ in range(iterations):
             self.model.train()
-            # Add training logic here
+            for data, target in self.dataset:
+                data, target = data.to(self.device), target.to(self.device)
+                output = self.model(data)
+                loss = torch.nn.functional.cross_entropy(output, target)
+                loss.backward()
+                self.model.optimizer.step()
+                self.model.optimizer.zero_grad()
         results['training_time'] = (time.time() - start_time) / iterations
 
         # Inference benchmark
@@ -30,7 +36,9 @@ class BenchmarkTool:
         with torch.no_grad():
             for _ in range(iterations):
                 self.model.eval()
-                # Add inference logic here
+                for data, _ in self.dataset:
+                    data = data.to(self.device)
+                self.model(data)
         results['inference_time'] = (time.time() - start_time) / iterations
 
         return results
