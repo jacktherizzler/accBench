@@ -18,6 +18,11 @@ class BenchmarkTool:
     def run_benchmark(self, iterations: int = 10) -> Dict[str, float]:
         results = {}
         
+        if self.model is None:
+            return {'error': 'Model not initialized. Please set model first.'}
+        if self.dataset is None:
+            return {'error': 'Dataset not initialized. Please set dataset first.'}
+        
         # Training benchmark
         start_time = time.time()
         for _ in range(iterations):

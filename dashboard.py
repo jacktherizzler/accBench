@@ -5,6 +5,28 @@ from benchmark import BenchmarkTool
 # Initialize benchmark tool
 benchmark_tool = BenchmarkTool()
 
+# Model selection
+st.sidebar.header('Model Configuration')
+model_file = st.sidebar.file_uploader('Upload model file', type=['pt', 'pth'])
+if model_file is not None:
+    try:
+        model = torch.load(model_file)
+        benchmark_tool.set_model(model)
+        st.sidebar.success('Model loaded successfully!')
+    except Exception as e:
+        st.sidebar.error(f'Error loading model: {str(e)}')
+
+# Dataset selection
+st.sidebar.header('Dataset Configuration')
+dataset_file = st.sidebar.file_uploader('Upload dataset file', type=['pt', 'pth', 'zip'])
+if dataset_file is not None:
+    try:
+        dataset = torch.load(dataset_file)
+        benchmark_tool.set_dataset(dataset)
+        st.sidebar.success('Dataset loaded successfully!')
+    except Exception as e:
+        st.sidebar.error(f'Error loading dataset: {str(e)}')
+
 # Streamlit app
 st.title('ML Accelerator Benchmark Dashboard')
 
