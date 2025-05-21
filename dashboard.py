@@ -7,25 +7,37 @@ benchmark_tool = BenchmarkTool()
 
 # Model selection
 st.sidebar.header('Model Configuration')
-model_file = st.sidebar.file_uploader('Upload model file', type=['pt', 'pth'])
-if model_file is not None:
-    try:
-        model = torch.load(model_file)
-        benchmark_tool.set_model(model)
-        st.sidebar.success('Model loaded successfully!')
-    except Exception as e:
-        st.sidebar.error(f'Error loading model: {str(e)}')
+model_options = ['ResNet18', 'VGG16', 'AlexNet', 'MobileNetV2']
+selected_model = st.sidebar.selectbox('Select model', model_options)
+
+# Load pre-trained models
+if selected_model == 'ResNet18':
+    model = torch.hub.load('pytorch/vision:v0.10.0', 'resnet18', pretrained=True)
+elif selected_model == 'VGG16':
+    model = torch.hub.load('pytorch/vision:v0.10.0', 'vgg16', pretrained=True)
+elif selected_model == 'AlexNet':
+    model = torch.hub.load('pytorch/vision:v0.10.0', 'alexnet', pretrained=True)
+elif selected_model == 'MobileNetV2':
+    model = torch.hub.load('pytorch/vision:v0.10.0', 'mobilenet_v2', pretrained=True)
+
+benchmark_tool.set_model(model)
+st.sidebar.success(f'{selected_model} loaded successfully!')
 
 # Dataset selection
 st.sidebar.header('Dataset Configuration')
-dataset_file = st.sidebar.file_uploader('Upload dataset file', type=['pt', 'pth', 'zip'])
-if dataset_file is not None:
-    try:
-        dataset = torch.load(dataset_file)
-        benchmark_tool.set_dataset(dataset)
-        st.sidebar.success('Dataset loaded successfully!')
-    except Exception as e:
-        st.sidebar.error(f'Error loading dataset: {str(e)}')
+dataset_options = ['CIFAR10', 'MNIST']
+selected_dataset = st.sidebar.selectbox('Select dataset', dataset_options)
+
+try:
+    if selected_dataset == 'CIFAR10':
+        dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True)
+    elif selected_dataset == 'MNIST':
+        dataset = torchvision.datasets.MNIST(root='./data', train=True, download=True)
+    
+    benchmark_tool.set_dataset(dataset)
+    st.sidebar.success(f'{selected_dataset} loaded successfully!')
+except Exception as e:
+    st.sidebar.error(f'Error loading dataset: {str(e)}')
 
 # Streamlit app
 st.title('ML Accelerator Benchmark Dashboard')
