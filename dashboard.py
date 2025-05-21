@@ -1,6 +1,12 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 from benchmark import BenchmarkTool
+import torch
+try:
+    import torchvision
+except ImportError as e:
+    st.error(f'Torchvision import error: {str(e)}')
+    st.stop()
 
 # Initialize benchmark tool
 benchmark_tool = BenchmarkTool()
